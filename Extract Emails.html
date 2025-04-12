@@ -5,172 +5,36 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;500;600&display=swap');
-        *{
-        font-family: 'Inter', sans-serif;
-    margin: 0px;
-    padding: 0px;
-}
-
-body{
-    padding-left: 20px;
-    padding-top: 20px;
-}
-
-.input-box{
-    height: 200px;
-    width: 100%;
-    word-wrap: break-word;
-}
-
-.header{
-    padding: 40px 80px;
-    text-align: center;
-}
-
-.inputs{
-    justify-content: flex-end;
-    max-width: 600px;
-    height: 100%;
-}
-
-.box{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    border-radius: 10px;
-    background-color: #f0f1f1;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    flex-grow: 1;
-}
-
-p{
-    font-size: 14px;
-}
-
-.inputs * {
-    flex-grow: 1;
-    width: 100%;
-}
-
-.txtBox{
-    margin: 10px 0px;
-    height: 30px;
-    width: 100%;
-}
-
-
-.btn{
-    margin-top: 10px;
-    padding: 5px 20px;
-}
-
-.result{
-    margin-top: 20px;
-    height: 300px;
-    width: 100%;
-}
-
-label{
-    font-size: 14px;
-}
-
-.btnPrimary{
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.btnSecondary{
-    background-color: #bf8259;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-.btnCopy{
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-}
-
-    .btn:hover{
-        background-color: #0056b3;
-        color: white;
-    }
-    .btnCopy:hover{
-        background-color: #45a049;
-        color: white;
-    }
-    .btnSecondary:hover{
-        background-color: #96654f;
-        color: white;
-    }
-    .btnPrimary:active, .btnCopy:active, .btnSecondary:active{
-        transform: scale(0.95);
-    }
-
-    .title{
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-
-    .main_container{
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-
-</style>
+    <link rel="stylesheet" href="styles.css">
     <title>Email Split
     </title>
-
 </head>
 <body>
 <div class="main_container">
     <div class="inputs box">
-        <!-- <p>Character Limit:</p>
-        <input class="txtBox"type="text" id="charLimit" placeholder="Enter your character limit"><br> -->
         <h3 class="title">Extract Emails</h3>
         <p>Enter your data below:</p>
         <input class="txtBox" type="text" id="inputT" placeholder="Paste the pdf content here">
-        <button class="btn btnPrimary" onclick="getEmails()">Get Emails</button>
-        <button class="btn btnSecondary" onclick="getEmailsNoDuplicates()">Get Emails without duplicates</button>
+        <button class="btn btnPrimary" onclick="getEmails()">Get Emails (with duplicates)</button>
+        <button class="btn btnSecondary" onclick="getEmailsNoDuplicates()">Get Emails (without duplicates)</button>
+        <button class="btn btnWarning" disabled>Remove previously bounced emails</button>
         <textarea class="result" name="result" id="result" cols="30" rows="10"></textarea><br>
         <button class="btn btnCopy" id="btnCopy" onclick="copyTo()">Copy emails</button>
     </div>
     <div class="inputs box">
-        <h3 class="title">Remove Bounced Emails</h3>
-        <div style="display: flex;align-items: center; justify-content: start; margin: 0px 0px 20px 0px ;">
-            <input type="checkbox" id="removeBouncedCheckbox" onclick="toggleBouncedBox()" style="transform: scale(1.2); cursor: pointer; width: 30px;"> 
-            <span>Remove emails based on bounces?</span>
+        <h3 class="title">Previously Bounced Emails</h3>
+        <div class="bounce_inputs">
+            <p>Upload CSV bounce list</p>
+            <input type="file" id="fileInput" accept=".csv" onchange="loadBounceEmails(event)"/>
         </div>
-        <p>Upload CSV bounce list</p>
-        <input type="file" id="fileInput" accept=".csv" />
+        <p>Previously bounced emails:</p>
+        <textarea class="result" name="bouncedEmailsResultBox" id="bouncedEmailsResultBox" cols="30" rows="10"></textarea>
     </div>
-
-<script>
-function toggleBouncedBox() {
-    const checkbox = document.getElementById("removeBouncedCheckbox");
-    const bouncedEmailsBox = document.getElementById("bouncedEmails");
-    bouncedEmailsBox.disabled = !checkbox.checked;
-}
-</script>
-    
 </div>
     
 <script>
+
+let arrBouncedEmails;
 
 function getEmails(){
     textarea = document.getElementById("result");
@@ -210,6 +74,7 @@ function getEmailsNoDuplicates(){
     
 }
 
+//Copy data to clipboard
 function copyTo() {
     var copyText = document.getElementById("result");
     copyText.select();
@@ -222,40 +87,37 @@ function copyTo() {
     }, 1000);
 }
 
-function getBounceEmails(){
-    textarea = document.getElementById("result");
-    let emailList = []
-    var reg = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b/;
-    let inputText = document.getElementById("inputT").value;
-    let emails = inputText.replace(/\t/g, ' ');
-    let emailsNocomma = emails.replace(/[<>"";,'{}\/\\]+/g, ' ');
-    let emailsClean = emailsNocomma.replace(/;/g, ' ').split(" ");
-    console.log(emailsNocomma);
+// Get emails from csv
+function loadBounceEmails(e) {
 
-    for(let i = 0; i < emailsClean.length; i++){
-        if(reg.test(emailsClean[i]) === true && emailsClean[i].length < 40){
-            emailList.push(emailsClean[i].toLowerCase());
-        }
+    const file = e.target.files[0];
+    if(file){
+    const reader = new FileReader();
+    
+
+    reader.onload = function(e) {
+        let bounceResultDisplay = document.getElementById("bouncedEmailsResultBox"); // getting the result box
+        
+        const content = e.target.result;        
+        const cleanedContent = content.replace(/^"|"$/g, "");
+        arrBouncedEmails = cleanedContent.split(/[\s,]+/).filter(item => item.trim() !== "");
+        console.log("Lines:", arrBouncedEmails);
+        bounceResultDisplay.value = arrBouncedEmails.join("\n");
+    };
+
+    reader.onerror = function(e) {
+        console.error("Error reading file", e);
+        alert("Failed to read file!");
+    };
+
+    reader.readAsText(file);
+    } else {
+        console.log("No file selected.");
     }
-    textarea.value = emailList.join("\n")
+    
 }
 
 
-
-// let chkvalue = false;
-
-// const removeDuplicates = () => {
-
-//     if (chkvalue == false){
-//         chkvalue = true;
-//         getEmailsNoDuplicates();
-    
-//     }else if(chkvalue == true){
-//         chkvalue = false;
-//         getEmails();
-//     }
-
-// }
 
 </script>
 </body>

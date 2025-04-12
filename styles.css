@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;500;600&display=swap');
+*{
+font-family: 'Inter', sans-serif;
+margin: 0px;
+padding: 0px;
+}
+
+body{
+padding-left: 20px;
+padding-top: 20px;
+}
+
+.input-box{
+height: 200px;
+width: 100%;
+word-wrap: break-word;
+}
+
+.header{
+padding: 40px 80px;
+text-align: center;
+}
+
+.inputs{
+justify-content: flex-end;
+max-width: 600px;
+height: 100%;
+}
+
+.box{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+padding: 20px 30px;
+border-radius: 10px;
+background-color: #f0f1f1;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+flex-grow: 1;
+}
+
+p{
+font-size: 14px;
+}
+
+.inputs * {
+flex-grow: 1;
+width: 100%;
+}
+
+.txtBox{
+margin: 10px 0px;
+height: 30px;
+width: 100%;
+}
+
+
+.btn{
+margin-top: 10px;
+padding: 5px 20px;
+}
+
+.result{
+margin-top: 20px;
+height: 300px;
+width: 100%;
+padding: 5px;
+}
+
+label{
+font-size: 14px;
+}
+
+.btnPrimary{
+background-color: #313538;
+color: white;
+border: none;
+border-radius: 5px;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+.btnSecondary{
+background-color: #313538;
+color: white;
+border: none;
+border-radius: 5px;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+.btnCopy{
+background-color: #4CAF50;
+color: white;
+border: none;
+border-radius: 5px;
+padding: 10px 20px;
+cursor: pointer;
+}
+
+button:disabled{
+background-color: #ccc;
+color: #666;
+}
+
+button:disabled:hover{
+    background-color: #ccc;
+    color: #666;
+    }
+
+.btnWarning{
+    background-color: #313538;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn:hover{
+background-color: #0056b3;
+color: white;
+}
+
+.btnCopy:hover{
+background-color: #45a049;
+color: white;
+}
+
+.btnSecondary:hover{
+background-color: #96654f;
+color: white;
+}
+
+.btnWarning:hover{
+background-color: #b82a1a;
+color: white;
+}
+
+.title{
+font-size: 20px;
+margin-bottom: 20px;
+}
+
+.main_container{
+display: flex;
+justify-content: space-evenly;
+align-items: center;
+}
+
+.bounce_inputs{
+    margin: 10px 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
+}
+
+.bounce_inputs input{
+    margin: 10px 0px;
+}
