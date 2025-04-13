@@ -5,9 +5,23 @@ margin: 0px;
 padding: 0px;
 }
 
-body{
-padding-left: 20px;
-padding-top: 20px;
+body {
+    padding: 0; /* Remove padding to avoid offset */
+    margin: 0; /* Remove margin to avoid offset */
+    height: 100vh; /* Full viewport height */
+    display: flex; /* Use flexbox to center content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+.main_container {
+    display: flex;
+    flex-direction: row; /* Keep boxes side by side */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    gap: 20px; /* Add spacing between the boxes */
+    width: auto; /* Prevent stretching */
+    height: auto; /* Prevent stretching */
 }
 
 .input-box{
@@ -21,32 +35,52 @@ padding: 40px 80px;
 text-align: center;
 }
 
-.inputs{
-justify-content: flex-end;
-max-width: 600px;
-height: 100%;
-}
 
 .box{
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-padding: 20px 30px;
-border-radius: 10px;
-background-color: #f0f1f1;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: space-between;
+    padding: 20px 30px;
+    border-radius: 10px;
+    background-color: #f0f1f1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    flex-grow: 1;
+    text-align: left;
 }
+
+.secondary_box{
+min-width: 400px;
+}
+
+.bounce_inputs{
+    margin: 10px 0px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    
+}
+
+.bounce_inputs p{
+    margin: 5px 0px;
+    font-size: 14px;
+    color: #333;
+}
+
+#fileInput::before{
+content: url('file-earmark-text.svg');
+margin-right: 5px;
+position: relative;
+top: 3px;
+}
+
 
 p{
 font-size: 14px;
 }
 
-.inputs * {
-flex-grow: 1;
-width: 100%;
-}
 
 .txtBox{
 margin: 10px 0px;
@@ -142,21 +176,14 @@ font-size: 20px;
 margin-bottom: 20px;
 }
 
-.main_container{
-display: flex;
-justify-content: space-evenly;
-align-items: center;
-}
-
-.bounce_inputs{
-    margin: 10px 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    
-}
 
 .bounce_inputs input{
     margin: 10px 0px;
+}
+
+.btnBox{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
 }
