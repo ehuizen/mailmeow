@@ -1,0 +1,170 @@
+<!doctype html>
+<!-- Version 1.4 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Email Split</title>
+  </head>
+  <body>
+    <div class="main_container">
+      <div class="box main_box">
+        <h3 class="title">Extract Emails</h3>
+        <p>Enter your data below:</p>
+        <textarea class="txtBox" id="inputT" placeholder="Paste the text containing emails here, or load a file below"></textarea>
+        <input type="file" id="dumpFileInput" accept=".txt,.csv,.html,.json,.log" onchange="loadDumpFile(event)" />
+        <div class="btnBox">
+          <button id="btnGetEmails" class="btn btnPrimary" onclick="getEmails()">Get emails</button>
+          <button id="btnDuplicates" class="btn btnSecondary" onclick="getEmailsNoDuplicates()" disabled>Remove duplicates</button>
+          <button id="btnBounces" class="btn btnWarning" onclick="removeBounces()" disabled>Remove listed emails</button>
+        </div>
+        <textarea class="result" name="result" id="result" cols="30" rows="10"></textarea><br />
+        <button class="btn btnCopy" id="btnCopy" onclick="copyTo()">Copy emails</button>
+      </div>
+      <div class="box secondary_box">
+        <h3 class="title">Emails to Remove</h3>
+        <div class="bounce_inputs">
+          <p>Upload an Excel, CSV or text file (bounces, unsubscribes, existing contacts...)</p>
+          <div>
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,.txt" multiple onchange="loadBounceEmails(event)" />
+          </div>
+        </div>
+        <p>Emails to remove (upload above, or paste/type them here):</p>
+        <textarea class="result" name="bouncedEmailsResultBox" id="bouncedEmailsResultBox" cols="30" rows="10" oninput="updateBounceButton()"></textarea>
+      </div>
+    </div>
+
+    <!-- SheetJS: reads Excel files for the remove list -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <script>
+      let currentEmails = [];
+
+      // Local part: no leading/trailing/double dots. Domain: dot-separated labels + letters-only TLD.
+      const EMAIL_REGEX =
+        /[A-Za-z0-9_%+-](?:[A-Za-z0-9_%+'-]|\.(?!\.))*(?<!\.)@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,}(?![A-Za-z0-9-])/g;
+      // Things like logo@2x.png look like emails but are file names
+      const FILE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "svg", "webp", "bmp", "ico"];
+
+      // Pull every email address out of free text (CSV, HTML, JSON, logs...), lowercased, in order
+      function extractEmails(text) {
+        const matches = text.match(EMAIL_REGEX) || [];
+        return matches.map((email) => email.toLowerCase()).filter((email) => !FILE_EXTENSIONS.includes(email.split(".").pop()));
+      }
+
+      function getEmails() {
+        let inputText = document.getElementById("inputT").value;
+        currentEmails = extractEmails(inputText);
+        document.getElementById("result").value = currentEmails.join("\n");
+
+        document.getElementById("btnDuplicates").disabled = currentEmails.length === 0;
+        document.getElementById("btnDuplicates").innerText = "Remove duplicates";
+        updateBounceButton();
+      }
+
+      function getEmailsNoDuplicates() {
+        currentEmails = [...new Set(currentEmails)];
+        document.getElementById("result").value = currentEmails.join("\n");
+        document.getElementById("btnDuplicates").innerText = "Duplicates removed!";
+        document.getElementById("btnDuplicates").disabled = true;
+      }
+
+      // Load a dump file (txt/csv/etc.) into the input box and extract straight away
+      function loadDumpFile(e) {
+        const file = e.target.files[0];
+        if (!file) {
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("inputT").value = e.target.result;
+          getEmails();
+        };
+        reader.onerror = function (e) {
+          console.error("Error reading file", e);
+          alert("Failed to read file!");
+        };
+        reader.readAsText(file);
+      }
+
+      //Copy data to clipboard
+      function copyTo() {
+        var copyText = document.getElementById("result");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        var btnCopy = document.getElementById("btnCopy");
+        btnCopy.innerText = "Copied!";
+        setTimeout(() => {
+          btnCopy.innerText = "Copy emails";
+        }, 1000);
+      }
+
+      // The remove list is whatever is in its box, so uploaded and pasted emails both count
+      function getBouncedEmails() {
+        return new Set(extractEmails(document.getElementById("bouncedEmailsResultBox").value));
+      }
+
+      function updateBounceButton() {
+        const btnBounces = document.getElementById("btnBounces");
+        btnBounces.innerText = "Remove listed emails";
+        btnBounces.disabled = currentEmails.length === 0 || getBouncedEmails().size === 0;
+      }
+
+      // Read a file as text; Excel files are converted sheet by sheet to CSV first
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const isExcel = /\.xlsx?$/i.test(file.name);
+          if (isExcel && typeof XLSX === "undefined") {
+            reject(new Error("The Excel reader could not load (are you offline?). Save the sheet as CSV and upload that instead."));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            if (isExcel) {
+              const workbook = XLSX.read(e.target.result, { type: "array" });
+              resolve(workbook.SheetNames.map((name) => XLSX.utils.sheet_to_csv(workbook.Sheets[name])).join("\n"));
+            } else {
+              resolve(e.target.result);
+            }
+          };
+          reader.onerror = () => reject(new Error("Failed to read " + file.name));
+          if (isExcel) {
+            reader.readAsArrayBuffer(file);
+          } else {
+            reader.readAsText(file);
+          }
+        });
+      }
+
+      // Get emails from uploaded files and add them to the remove list
+      async function loadBounceEmails(e) {
+        const files = [...e.target.files];
+        if (files.length === 0) {
+          return;
+        }
+        const bounceResultDisplay = document.getElementById("bouncedEmailsResultBox");
+        try {
+          const contents = await Promise.all(files.map(readFileAsText));
+          const emails = new Set([...getBouncedEmails(), ...extractEmails(contents.join("\n"))]);
+          bounceResultDisplay.value = [...emails].join("\n");
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+        e.target.value = ""; // allow re-uploading the same file
+        updateBounceButton();
+      }
+
+      //Remove listed emails from the results
+      function removeBounces() {
+        const bouncedEmails = getBouncedEmails();
+        const before = currentEmails.length;
+        currentEmails = currentEmails.filter((email) => !bouncedEmails.has(email));
+        document.getElementById("result").value = currentEmails.join("\n");
+        document.getElementById("btnBounces").innerText = "Removed " + (before - currentEmails.length) + "!";
+      }
+    </script>
+  </body>
+</html>

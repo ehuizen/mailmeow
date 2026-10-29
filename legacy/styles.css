@@ -84,8 +84,10 @@ font-size: 14px;
 
 .txtBox{
 margin: 10px 0px;
-height: 30px;
+height: 120px;
 width: 100%;
+padding: 5px;
+box-sizing: border-box;
 }
 
 

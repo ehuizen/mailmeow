@@ -1,0 +1,45 @@
+=== CRM EXPORT // contacts_activity_2026-10-29T08:14:52Z // batch 3 of 7 ===
+export_id=7f3a9c21-bd04-4e1a-9a6f-22c8e01f3b7d;source=SalesHub;rows=48;encoding=utf-8
+
+id|first_name|last_name|email|phone|company|owner|last_activity|notes
+10231|Thandi|Mokoena|thandi.mokoena@example.com|+27 82 555 0143|Mokoena Interiors|kean@agency.example|2026-10-12|"Wants quote, cc her PA: lerato.pa@example.com"
+10232|Johan|van der Merwe|JOHAN.VDM@Example.Org|021 555 0199|VDM Logistics|kean@agency.example|2026-10-14|follow up re: invoice #4471
+10233|Priya|Naidoo|priya+newsletter@example.net||Naidoo & Sons|sam@agency.example|2026-09-30|subscribed via form; alt: priya.naidoo@mail.example.net
+10234|Ben|O'Connor|ben.o'connor@example.co.za|+27 (0)11 555 0172|O'Connor Builders|sam@agency.example|2026-10-01|apostrophe in local part - valid!
+10235|Ayesha|Patel|ayesha_patel99@example.com;ayesha@patel-design.example|083 555 0110|Patel Design|kean@agency.example|2026-10-20|two emails in one field, semicolon sep
+10236|Unknown|Lead||||web-form|2026-10-21|no email captured, "contact us" form spam?
+10237|Marco|Rossi|marco.rossi@sub.domain.example.it|+39 555 0101|Rossi SRL|kean@agency.example|2026-10-22|
+
+--- ACTIVITY LOG ---
+[2026-10-12 09:01] EMAIL_OUT to=<thandi.mokoena@example.com> cc=<lerato.pa@example.com> subject="Quote - lounge refit"
+[2026-10-12 11:47] EMAIL_IN from="Thandi Mokoena" <Thandi.Mokoena@example.com> subject="RE: Quote - lounge refit"
+[2026-10-14 16:20] BOUNCE: Delivery failed for johan.vdm@exmaple.org (550 5.1.1 user unknown) -- typo domain, see corrected: johan.vdm@example.org
+[2026-10-15 08:03] NOTE: Spoke to Johan, he says use accounts@vdm-logistics.example for all billing.
+[2026-10-16 13:30] EMAIL_OUT to=priya+newsletter@example.net,support@helpdesk.example;bcc=archive@agency.example
+[2026-10-18 10:10] MERGE: duplicate contact merged (old: ben.oconnor@example.co.za -> new: ben.o'connor@example.co.za)
+[2026-10-20 14:55] NOTE: Ayesha said "email me at ayesha [at] patel-design [dot] example, not the gmail one"
+[2026-10-21 07:12] FORM_SUBMIT {"name":"test","email":"asdf@asdf","message":"<script>alert(1)</script>"}
+[2026-10-21 07:13] FORM_SUBMIT {"name":"Real Person","email":"real.person@example.com","message":"Hi, I need a website quote. Reach me on real.person@example.com or my work addy r.person@company.example."}
+[2026-10-22 18:40] EMAIL_IN from=marco.rossi@sub.domain.example.it reply-to=m.rossi@rossi-srl.example subject="Preventivo"
+
+--- RAW HTML SIGNATURE (pasted by user) ---
+<div class="sig"><p>Kind regards,<br>Nomvula Dlamini<br>Head of Ops | <a href="mailto:nomvula.dlamini@ops.example.com?subject=Hello">nomvula.dlamini@ops.example.com</a><br>
+Tel: 012 555 0188 | <a href="https://example.com/contact">Contact page</a><br>
+<img src="https://cdn.example.com/logo@2x.png" alt="logo"></p></div>
+
+--- JSON WEBHOOK PAYLOAD ---
+{"event":"contact.updated","data":{"id":10240,"emails":[{"type":"work","value":"d.smith@smith-co.example"},{"type":"personal","value":"DSmith1987@example.net"}],"owner":{"email":"kean@agency.example"},"meta":{"ip":"192.0.2.44","ua":"Mozilla/5.0","tracking":"user@1.2.3.4-not-an-email"}}}
+
+--- FREE TEXT NOTES ---
+Met Lindiwe at the expo, card says lindiwe.k@events.example.africa. She mentioned her colleague (sipho.m@events.example.africa), who handles budgets.
+Old address no longer works: sipho@oldcompany.example (do not use).
+Trailing punctuation test: email me at chris@example.com. Or chris.backup@example.com, whichever.
+In brackets (grace.h@example.org) and in quotes "hello@grace-studio.example".
+Not emails: @handle_on_twitter, someone@, @example.com, user@@example.com, user@example..com, user.@example.com, name@localhost
+Price note: 10 units @ R450 each, ETA 2 weeks @ warehouse.
+Weird but valid: o'reilly-team@example.com, first.last-tag_01@a-b.example.co.uk, x@y.example
+Uppercase dupes: CHRIS@EXAMPLE.COM, Grace.H@Example.org
+Wrapped line: please forward to tom.
+jones@example.com (line break mid-address, should NOT match as tom.jones)
+
+=== END BATCH 3 ===
