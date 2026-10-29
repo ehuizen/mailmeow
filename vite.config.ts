@@ -47,7 +47,8 @@ export default defineConfig({
         format: "es",
     },
     test: {
-        environment: "jsdom",
+        // Pure logic runs in plain Node (fast). UI test files opt in to a fake browser with `// @vitest-environment jsdom`.
+        environment: "node",
         setupFiles: ["./src/test/setup.ts"],
         include: ["src/**/*.test.{ts,tsx}"],
     },
