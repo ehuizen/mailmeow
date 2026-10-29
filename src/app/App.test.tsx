@@ -1,4 +1,5 @@
 // End-to-end tests of the app in jsdom: real screens, real reducer and core, with extraction running inline (no Worker in jsdom).
+// @vitest-environment jsdom
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
