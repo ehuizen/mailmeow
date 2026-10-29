@@ -31,6 +31,11 @@ npm run build      # production build in dist/
 npm run preview    # serve the production build
 ```
 
+## Deploy
+
+Pushes to `main` deploy to GitHub Pages through `.github/workflows/deploy.yml`. One-time setup: **Settings → Pages → Source: GitHub Actions**.
+Every push and pull request also runs typecheck, lint, tests and a build (`.github/workflows/ci.yml`).
+
 ## How it's built
 
 React + Vite + TypeScript (strict), [Untitled UI React](https://www.untitledui.com/react) components (MIT) on Tailwind CSS v4, SheetJS for Excel, and Vitest + React Testing Library. Email logic lives in pure functions in `src/core/` and was written test-first. File parsing runs in a Web Worker so the UI never freezes.
