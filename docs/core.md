@@ -113,7 +113,7 @@ It returns `{ kept, removed, removedTotal }`, where `removed` has one count per 
 **Why recompute from the original list every time:** screens never mutate data; they only change `options`. So Back, Skip and changing your mind always give correct results, and the Review funnel always adds up.
 Every step is a Set lookup, so 50,000 addresses take milliseconds.
 
-**Tests:** `clean-list.test.ts`, which covers each step, ordering, keeping duplicates, and a 50k benchmark under 300 ms.
+**Tests:** `clean-list.test.ts`, which covers each step, ordering, keeping duplicates, and a 50k benchmark under 1 s. Timing budgets are deliberately loose (a quadratic regression takes seconds, so they still catch it) so they don't flake on busy machines or CI.
 
 ## `MAX_EMAILS`, `checkFile`, `isExcelFile`, `extensionOf`, `ACCEPT_ATTRIBUTE` · `limits.ts`
 **What:**
