@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        ignores: ["dist", "legacy", "_scaffold", "src/components/base", "src/components/application", "src/components/foundations", "src/utils/cx.ts", "src/utils/is-react-component.ts", "src/hooks/use-clipboard.ts"],
+        ignores: ["dist", "legacy", "_scaffold", ".verify", "src/components/base", "src/components/application", "src/components/foundations", "src/utils/cx.ts", "src/utils/is-react-component.ts", "src/hooks/use-clipboard.ts"],
     },
     {
         files: ["**/*.{ts,tsx}"],
