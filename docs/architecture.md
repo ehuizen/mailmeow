@@ -38,6 +38,20 @@ MailMeow is a **static, browser-only** React app. Nothing you paste or upload le
 | `legacy/` | The original single-page tool | Reference only. |
 | `test/fixtures/` | Sample data (`.example` domains only) | The golden fixture has 33 unique addresses. |
 
+## Files module (`src/files/`)
+
+| Function | What it does | Why |
+|---|---|---|
+| `readFileAsText(file)` · `read-file.ts` | Refuses unsupported/too-big files by name and size, reads text files with `file.text()`, and turns every sheet of an Excel workbook into CSV text (SheetJS, `dense: true`, loaded on demand). Throws `FileReadError` with a reason. | Addresses can be in any column or sheet, and extraction finds them in text anyway. Dense mode saves memory. |
+| `isTruncatedZip(bytes)` · `read-file.ts` | Detects an `.xlsx` that starts like a zip but has no end-of-central-directory record. | SheetJS 0.20.3 **loops forever** on truncated workbooks (found by a test during the build), so they're rejected before parsing. |
+| `extractFromSources(files, pasted, onProgress)` · `extract-sources.ts` | Reads each source, extracts addresses, reports per source (`ok`, `unsupported`, `too-big`, `unreadable`), applies the 50,000 cap. | The testable heart of the worker. One bad file never stops the others. |
+| `extract.worker.ts` + `worker-messages.ts` | The Web Worker and its typed message contract (progress / result / error). | Keeps parsing off the UI thread. Shared types keep both sides in sync. |
+| `runExtraction(files, pasted, { onProgress, signal })` · `run-extraction.ts` | Promise wrapper around the worker. `signal` cancels by terminating the worker; falls back to inline work where `Worker` doesn't exist (tests). | Cancel is instant and frees memory. |
+| `withMinimumDuration(promise, ms)` · `run-extraction.ts` | Resolves no sooner than `ms`. | The Processing screen shows for at least 3 s (agreed on the board), so fast results don't flash past. |
+| `copyList`, `downloadCsv`, `downloadXlsx`, `exportFileName` · `export-list.ts` | Clipboard (with a fallback for blocked clipboards), CSV with a UTF-8 BOM, Excel via a dynamic SheetJS import, and dated file names. | Exports happen locally through object URLs; nothing is uploaded. The BOM stops Excel on Windows from mangling characters. |
+
+Tests: `src/files/extract-sources.test.ts`. It covers Excel with several sheets, refusing files before reading them, a mislabelled text file, a corrupt workbook, progress, and the 50,000 cap.
+
 ## Key decisions (and why)
 
 - **No router.** The flow is a `useReducer` state machine. Data only lives in memory, so a URL per screen would just lead to empty screens on refresh.
