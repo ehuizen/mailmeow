@@ -4,3 +4,13 @@ dist/
 .env.*
 CLAUDE.md
 CLAUDE.local.md
+
+# Build output and tooling
+dist/
+*.local
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+_scaffold/
