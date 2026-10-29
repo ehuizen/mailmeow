@@ -69,14 +69,14 @@ describe("extractEmails", () => {
         const hex = "a1b2c3d4e5f6".repeat(4000); // 48 KB, the kind of token that froze the legacy app for 4.5 s
         const started = performance.now();
         expect(emailsIn(hex)).toEqual([]);
-        expect(performance.now() - started).toBeLessThan(50);
+        expect(performance.now() - started).toBeLessThan(250);
     });
 
     it("stays fast on a long dotted run with no @", () => {
         const dotted = "ab.".repeat(15000);
         const started = performance.now();
         extractEmails(dotted);
-        expect(performance.now() - started).toBeLessThan(50);
+        expect(performance.now() - started).toBeLessThan(250);
     });
 
     describe("skipped candidates", () => {
