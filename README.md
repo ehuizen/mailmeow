@@ -43,7 +43,6 @@ React + Vite + TypeScript (strict), [Untitled UI React](https://www.untitledui.c
 - [Architecture](docs/architecture.md): how the pieces fit and why.
 - [Core functions](docs/core.md): every email-handling function, with its edge cases and tests.
 - [Screens](docs/screens.md): every screen, its states and why it exists.
-- [Logbook](docs/logbook.md): how this was planned and built (process, decisions, research).
 - [`legacy/`](legacy/): the original single-page tool this replaces.
 
 ## Credits

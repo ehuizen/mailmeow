@@ -4,6 +4,8 @@ dist/
 .env.*
 CLAUDE.md
 CLAUDE.local.md
+# Private session log (kept locally, not published)
+docs/logbook.md
 
 # Build output and tooling
 dist/
