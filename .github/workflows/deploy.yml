@@ -1,5 +1,5 @@
-# Deploys main to GitHub Pages. One-time setup: repo Settings → Pages → Source: "GitHub Actions".
-name: Deploy to GitHub Pages
+# Deploys main to the VPS: builds in GitHub Actions, then rsyncs dist/ to a key that can only write to the site folder.
+name: Deploy to VPS
 
 on:
   push:
@@ -8,15 +8,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
+# Never let two uploads race; the newest push wins.
 concurrency:
-  group: pages
+  group: deploy-vps
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,20 +25,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
-      # Pages serves the site from /<repo-name>/, so asset URLs need that prefix.
+      # Served from the domain root, so no BASE_PATH (Vite defaults to "/").
       - run: npm run build
-        env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519
+
+      # The server forces this key into rrsync, locked to /var/www/mailmeow, so "./" is that folder.
+      # --delete removes old hashed asset files so the folder matches the build exactly.
+      - name: Upload
+        run: rsync -avz --delete -e "ssh -p ${{ secrets.SSH_PORT }}" dist/ deploy@${{ secrets.SSH_HOST }}:./

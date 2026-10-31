@@ -33,7 +33,7 @@ npm run preview    # serve the production build
 
 ## Deploy
 
-Pushes to `main` deploy to GitHub Pages through `.github/workflows/deploy.yml`. One-time setup: **Settings → Pages → Source: GitHub Actions**.
+Pushes to `main` deploy to a VPS through `.github/workflows/deploy.yml`. GitHub Actions builds the site, then rsyncs `dist/` over SSH with a key the server restricts to writing the site folder (rrsync), and Caddy serves it. The workflow needs four repo secrets: `SSH_PRIVATE_KEY`, `SSH_HOST`, `SSH_PORT` and `SSH_KNOWN_HOSTS`.
 Every push and pull request also runs typecheck, lint, tests and a build (`.github/workflows/ci.yml`).
 
 ## How it's built

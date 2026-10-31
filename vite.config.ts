@@ -1,4 +1,4 @@
-// Vite build + Vitest config for MailMeow: React, Tailwind v4, the "@" alias, Pages base path and a production-only CSP.
+// Vite build + Vitest config for MailMeow: React, Tailwind v4, the "@" alias, an optional base path and a production-only CSP.
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
@@ -35,7 +35,7 @@ function contentSecurityPolicy(): Plugin {
 }
 
 export default defineConfig({
-    // GitHub Pages serves the site from /<repo>/; the deploy workflow sets BASE_PATH. Locally it's "/".
+    // The VPS serves the site from the domain root ("/"). Set BASE_PATH only if it's ever hosted under a sub-path.
     base: process.env.BASE_PATH ?? "/",
     plugins: [react(), tailwindcss(), contentSecurityPolicy()],
     resolve: {
